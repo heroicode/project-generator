@@ -33,11 +33,30 @@ rename () {
 }
 
 mkdir "$PROJECT_BASEDIR"
-for tmpl in "$self"/templates/*; do
-	dest=$(rename "${tmpl##*/}")
-	# echo "$dest"
-	sed "$tmpl" > "$PROJECT_BASEDIR/$dest"
-done
+
+process_templates() {
+	for tmpl in "$@"; do
+		dest=$(rename "${tmpl##*/}")
+		# echo "$dest"
+		if [ -f "$tmpl" ]; then
+			sed "$tmpl" > "$PROJECT_BASEDIR/$dest"
+		elif [ -d "$tmpl" ]; then
+			mkdir "$PROJECT_BASEDIR/$dest"
+			# shellcheck disable=SC2030
+			(
+				PROJECT_BASEDIR="$PROJECT_BASEDIR/$dest"
+				TEMPLATE_BASE="$TEMPLATE_BASE/$dest"
+				process_templates "$TEMPLATE_BASE"/*
+			)
+		else
+			echo >&2 "Found $dest but have no logic to process it"
+		fi
+	done
+}
+
+TEMPLATE_BASE="$self"/templates/
+process_templates "$TEMPLATE_BASE"/*
+
 (cd "$PROJECT_BASEDIR" && {
 	git init .
 })
