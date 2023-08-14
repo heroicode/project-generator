@@ -1,0 +1,35 @@
+set dotenv-load
+set ignore-comments
+
+# default build action
+@build:
+    echo >&2 not implemented
+    exit 3
+
+# bypass package manager and just install files
+[private]
+@install:
+    echo >&2 not implemented
+    exit 2
+
+# run tests not covered by build
+@test:
+    just build
+    echo >&2 not implemented
+    exit 1
+
+#
+# Additional ideas for recipes that you might need.
+#
+
+## Clean cached build artifacts
+#clean:
+
+## Configure your project after checkout or clean
+#configure:
+
+## Create a release build
+#release platform=stable-x86_64-apple-darwin:
+
+## Deploy to a target somewhere
+#deploy target:
