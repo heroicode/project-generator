@@ -16,6 +16,7 @@ PROJECT_DESCRIPTION=${PROJECT_DESCRIPTION:-${3:-$PROJECT_NAME}}
 [ "$PROJECT_DESCRIPTION" = '-' ] && PROJECT_DESCRIPTION="$PROJECT_NAME"
 PROJECT_BASEDIR="$PWD/$PROJECT_DIR"
 GIT_USER=$(git config --get user.email || echo "${USER}@localhost")
+IGNORE_FILES=${IGNORE_FILES:-.gitignore}
 
 self=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd); cd "$self"
 
@@ -35,13 +36,22 @@ rename () {
 	esac
 }
 
+ignore() {
+	for i in ${IGNORE_FILES}; do
+		[ "$1" = "$i" ] && return
+	done
+	false
+}
+
 mkdir "$PROJECT_BASEDIR"
 
 process_templates() {
 	for tmpl in "$@"; do
 		dest=$(rename "${tmpl##*/}")
 		# echo "$dest"
-		if [ -f "$tmpl" ]; then
+		if ignore "$dest"; then
+			:
+		elif [ -f "$tmpl" ] && ! ignore "$dest"; then
 			sed "$tmpl" > "$PROJECT_BASEDIR/$dest"
 		elif [ -d "$tmpl" ]; then
 			mkdir "$PROJECT_BASEDIR/$dest"
