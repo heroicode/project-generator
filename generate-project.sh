@@ -15,6 +15,7 @@ PROJECT_DESCRIPTION=${PROJECT_DESCRIPTION:-${3:-$PROJECT_NAME}}
 [ "$PROJECT_NAME" = '-' ] && PROJECT_NAME="$PROJECT_DIR"
 [ "$PROJECT_DESCRIPTION" = '-' ] && PROJECT_DESCRIPTION="$PROJECT_NAME"
 PROJECT_BASEDIR="$PWD/$PROJECT_DIR"
+GIT_USER=$(git config --get user.email || echo "${USER}@localhost")
 
 self=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd); cd "$self"
 
@@ -22,12 +23,14 @@ self=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd); cd "$self"
 sed() {
 	command sed <"$1" \
 		-e "s/\$[{]PROJECT_NAME[}]/${PROJECT_NAME}/g" \
-		-e "s/\$[{]PROJECT_DESCRIPTION[}]/${PROJECT_DESCRIPTION}/g"
+		-e "s/\$[{]PROJECT_DESCRIPTION[}]/${PROJECT_DESCRIPTION}/g" \
+		-e "s/\$[{]GIT_USER[}]/${GIT_USER}/g"
 }
 
 rename () {
 	case "$1" in
-		editorconfig|env|gitignore) echo ."$1";;
+		editorconfig|env|gitignore|gitattributes)
+		   echo ."$1";;
 		*) echo "$1"
 	esac
 }
