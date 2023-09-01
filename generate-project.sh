@@ -16,7 +16,7 @@ PROJECT_DESCRIPTION=${PROJECT_DESCRIPTION:-${3:-$PROJECT_NAME}}
 [ "$PROJECT_DESCRIPTION" = '-' ] && PROJECT_DESCRIPTION="$PROJECT_NAME"
 PROJECT_BASEDIR="$PWD/$PROJECT_DIR"
 GIT_USER=$(git config --get user.email || echo "${USER}@localhost")
-IGNORE_FILES=${IGNORE_FILES:-.gitignore}
+IGNORE_FILES=${IGNORE_FILES:-}
 
 self=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd); cd "$self"
 
