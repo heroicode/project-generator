@@ -7,18 +7,18 @@ case "$PROJECT_DIR" in (-h|-?|help|-help|--help)
 	exit
 esac
 if [ "${PROJECT_DIR##*/}" != "$PROJECT_DIR" ]; then
-	echo >&2 "$PROJECT_DIR seems to be a subdirectory, which is not supported"
-	exit 4
+	PROJECT_BASEDIR="$PROJECT_DIR"
+	PROJECT_DIR="${PROJECT_DIR##*/}"
 fi
 PROJECT_NAME=${PROJECT_NAME:-${2:-$PROJECT_DIR}}
 PROJECT_DESCRIPTION=${PROJECT_DESCRIPTION:-${3:-$PROJECT_NAME}}
 [ "$PROJECT_NAME" = '-' ] && PROJECT_NAME="$PROJECT_DIR"
 [ "$PROJECT_DESCRIPTION" = '-' ] && PROJECT_DESCRIPTION="$PROJECT_NAME"
-PROJECT_BASEDIR="$PWD/$PROJECT_DIR"
+PROJECT_BASEDIR="${PROJECT_BASEDIR:-$PWD/$PROJECT_DIR}"
 GIT_USER=$(git config --get user.email || echo "${USER}@localhost")
 IGNORE_FILES=${IGNORE_FILES:-}
 
-self=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd); cd "$self"
+self=$(CDPATH='' cd -- "$(dirname -- "$(realpath $0)")" && pwd); cd "$self"
 
 
 sed() {
@@ -43,7 +43,7 @@ ignore() {
 	false
 }
 
-mkdir "$PROJECT_BASEDIR"
+mkdir -p "$PROJECT_BASEDIR"
 
 process_templates() {
 	for tmpl in "$@"; do
